@@ -24,6 +24,8 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::middleware('auth')->group(function () {
     Route::resource('product-variant', 'VariantController');
     Route::resource('product', 'ProductController');
+    // Route::patch('product-update/{id}', 'ProductController@update');
+    Route::resource('product-images', 'ProductImageController');
     Route::resource('blog', 'BlogController');
     Route::resource('blog-category', 'BlogCategoryController');
 });
