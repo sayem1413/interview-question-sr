@@ -128,29 +128,62 @@ export default {
         variants: {
             type: Array,
             required: true
-        }
+        },
+        product: {
+            type: Object,
+            required: true
+        },
     },
     data() {
         return {
-            product_name: '',
-            product_sku: '',
-            description: '',
+            product_name: this.product.title,
+            product_sku: this.product.sku,
+            description: this.product.description,
             images: [],
             product_variant: [
-                {
-                    option: this.variants[0].id,
-                    tags: []
-                }
+                // {
+                //     option: this.variants[0].id,
+                //     tags: []
+                // }
             ],
             product_variant_prices: [],
-            // dropzoneOptions: {
-            //     url: 'https://httpbin.org/post',
-            //     thumbnailWidth: 150,
-            //     maxFilesize: 0.5,
-            //     headers: {"My-Awesome-Header": "header value"}
-            // },
             errors:[],
         }
+    },
+
+    computed:{
+        getAllImages(){
+            let images = this.product.images.map((image) => {
+                return {
+                    id: image.id,
+                    file_path: '/' + image.file_path??'',
+                };
+            })
+
+            return images;
+        },
+        getAllProductVariantPrices(){
+            let productVariantPrices = this.product.productVariantPrices.map((productVariantPrice) => {
+                return {
+                    id: productVariantPrice.id,
+                    title:productVariantPrice.variantText,
+                    price:productVariantPrice.price,
+                    stock:productVariantPrice.stock,
+                };
+            })
+
+            return productVariantPrices;
+        },
+        getAllProductVariant(){
+            let productVariants = this.product.productVariants.map((productVariant) => {
+                return {
+                    option:productVariant['id'],
+                    tags:productVariant['tags'] 
+                };
+            })
+
+            return productVariants;
+        },
     },
     methods: {
         // it will push a new object into product variant
@@ -241,11 +274,12 @@ export default {
                 description: this.description,
                 product_image: this.images,
                 product_variant: this.product_variant,
-                product_variant_prices: this.product_variant_prices
+                product_variant_prices: this.product_variant_prices,
+                _method: 'PATCH',
             }
 
 
-            axios.post('/product', product).then(response => {
+            axios.post('/product/'+this.product.id, product).then(response => {
                 console.log(response.data);
             }).catch(error => {
                 console.log(error);
@@ -260,6 +294,9 @@ export default {
 
     },
     mounted() {
+        this.images = this.getAllImages;
+        this.product_variant_prices = this.getAllProductVariantPrices;
+        this.product_variant = this.getAllProductVariant;
         console.log('Component mounted.')
     }
 }
